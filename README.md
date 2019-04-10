@@ -1,5 +1,7 @@
 # Venja
 
+[![Build Status](https://dev.azure.com/6a64/Venja/_apis/build/status/venja-app.venja-backend?branchName=master)](https://dev.azure.com/6a64/Venja/_build/latest?definitionId=2&branchName=master)
+
 A simple, beautifully designed habit tracker.
 
 ## License
