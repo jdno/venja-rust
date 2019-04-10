@@ -1,0 +1,7 @@
+[package]
+name = "venja-api"
+version = "0.1.0"
+authors = ["Jan David <jandavid@6a64.com>"]
+edition = "2018"
+
+[dependencies]
