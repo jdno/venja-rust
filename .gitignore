@@ -1,2 +1,6 @@
+# Project configuration
+.env
+
+# Cargo output and temporary files
 /target
 **/*.rs.bk

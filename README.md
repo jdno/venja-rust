@@ -4,6 +4,22 @@
 
 A simple, beautifully designed habit tracker.
 
+## Getting Started
+
+The backend of **Venja** is built using Rust. Make sure you have the latest
+stable version of Rust installed before continuing.
+
+In this project, [Diesel](http://diesel.rs) is used to work with the database.
+It comes with its own CLI that helps manage the project. The CLI must be
+installed separately using the following command:
+
+    $ cargo install diesel_cli
+
+Once Diesel's CLI is installed, run the following command to set up the
+database:
+
+    $ diesel setup
+
 ## License
 
 Copyright (c) 2019 Jan David Nose

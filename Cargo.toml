@@ -5,3 +5,5 @@ authors = ["Jan David <jandavid@6a64.com>"]
 edition = "2018"
 
 [dependencies]
+diesel = { version = "1.4.2", features = ["postgres"] }
+dotenv = "0.13.0"
