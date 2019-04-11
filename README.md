@@ -1,6 +1,7 @@
 # Venja
 
 [![Build Status](https://dev.azure.com/6a64/Venja/_apis/build/status/venja-app.venja-backend?branchName=master)](https://dev.azure.com/6a64/Venja/_build/latest?definitionId=2&branchName=master)
+[![codecov](https://codecov.io/gh/venja-app/venja-backend/branch/master/graph/badge.svg)](https://codecov.io/gh/venja-app/venja-backend)
 
 A simple, beautifully designed habit tracker.
 
