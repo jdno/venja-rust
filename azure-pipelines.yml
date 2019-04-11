@@ -37,7 +37,7 @@ jobs:
           echo "##vso[task.setvariable variable=PATH;]$PATH:$HOME/.cargo/bin"
         displayName: Install Rust
 
-      - script: cargo install cargo-make
+      - script: build/cargo-make.sh
         displayName: Install cargo-make
 
       - script: cargo make ci-flow
