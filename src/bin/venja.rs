@@ -1,4 +1,4 @@
-mod config;
+extern crate venja_api;
 
 use dotenv::dotenv;
 
