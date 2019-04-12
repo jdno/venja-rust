@@ -26,21 +26,9 @@ fn addr() -> String {
 #[cfg(test)]
 mod tests {
     use crate::server::addr;
-    use std::env;
-
-    #[test]
-    fn server_addr_from_env() {
-        env::set_var("VENJA_HOST", "host");
-        env::set_var("VENJA_PORT", "port");
-
-        assert_eq!(addr(), "host:port");
-    }
 
     #[test]
     fn server_addr_from_defaults() {
-        env::remove_var("VENJA_HOST");
-        env::remove_var("VENJA_PORT");
-
         assert_eq!(addr(), "0.0.0.0:3000");
     }
 }
