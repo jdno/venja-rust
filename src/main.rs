@@ -1,3 +1,5 @@
+mod config;
+
 use dotenv::dotenv;
 
 fn main() {
