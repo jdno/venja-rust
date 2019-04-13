@@ -1,11 +1,11 @@
-extern crate venja_api;
+extern crate venja;
 
 use actix_web::actix::System;
 use actix_web::server;
 use dotenv::dotenv;
 use std::env;
-use venja_api::config::Config;
-use venja_api::{app, models};
+use venja::config::Config;
+use venja::{app, models};
 
 fn main() {
     dotenv().ok();
