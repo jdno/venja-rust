@@ -3,5 +3,6 @@
 //! GraphQL.
 
 #![deny(missing_docs)]
+pub mod app;
 pub mod config;
 pub mod models;

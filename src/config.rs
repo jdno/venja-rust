@@ -7,7 +7,7 @@ use std::str::FromStr;
 /// The application can run in one of three environments: test, development, or
 /// production. Depending on the environment, certain features or settings might
 /// be different.
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Environment {
     /// Automated testing
     Test,
@@ -41,6 +41,7 @@ impl FromStr for Environment {
 /// its configuration from environment variables. This can be used to configure
 /// the application in production environments. If no environment variables are
 /// set, sensible defaults for local development are used.
+#[derive(Clone)]
 pub struct Config {
     /// The environment the application is running in. Defaults to development.
     pub env: Environment,
