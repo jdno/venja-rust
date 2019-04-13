@@ -4,4 +4,6 @@
 
 #![deny(missing_docs)]
 pub mod config;
+pub mod handlers;
 pub mod models;
+pub mod router;
