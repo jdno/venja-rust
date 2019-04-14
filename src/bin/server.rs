@@ -9,5 +9,5 @@ fn main() {
     let config = Config::default();
     let address = config.server_address();
 
-    gotham::start(address, router::router())
+    gotham::start(address, router::router(config))
 }

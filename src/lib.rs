@@ -3,6 +3,10 @@
 //! GraphQL.
 
 #![deny(missing_docs)]
+
+#[macro_use]
+extern crate gotham_derive;
+
 pub mod config;
 pub mod handlers;
 pub mod models;

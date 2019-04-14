@@ -33,6 +33,16 @@ impl FromStr for Environment {
     }
 }
 
+impl ToString for Environment {
+    fn to_string(&self) -> String {
+        match self {
+            Environment::Development => String::from("development"),
+            Environment::Production => String::from("production"),
+            Environment::Test => String::from("test"),
+        }
+    }
+}
+
 /// The `Config` struct defines the configurable parameters of the application.
 /// It can be used to inject specific configuration into the application, e.g.
 /// for testing.
