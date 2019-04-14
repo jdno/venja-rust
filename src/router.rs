@@ -3,9 +3,11 @@
 
 use crate::config::Config;
 use crate::handlers::health;
+use crate::middleware::diesel::DieselMiddleware;
+use crate::models::PgPool;
 use gotham::middleware::state::StateMiddleware;
-use gotham::pipeline::single::single_pipeline;
-use gotham::pipeline::single_middleware;
+use gotham::pipeline::new_pipeline;
+use gotham::pipeline::set::{finalize_pipeline_set, new_pipeline_set, PipelineSet};
 use gotham::router::builder::*;
 use gotham::router::Router;
 use std::sync::Arc;
@@ -23,16 +25,27 @@ pub struct AppState {
 ///
 /// This function creates a new instance of a router, and maps HTTP endpoints to
 /// specific `handlers`.
-pub fn router(config: Config) -> Router {
+pub fn router(config: Config, pool: PgPool) -> Router {
     let state = AppState {
         config: Arc::new(config),
     };
 
-    let middleware = StateMiddleware::new(state);
-    let pipeline = single_middleware(middleware);
-    let (chain, pipelines) = single_pipeline(pipeline);
+    let state_middleware = StateMiddleware::new(state);
+    let diesel_middleware = DieselMiddleware::with_pool(pool);
 
-    build_router(chain, pipelines, |route| {
+    let pipelines = new_pipeline_set();
+
+    let (pipelines, default) = pipelines.add(
+        new_pipeline()
+            .add(state_middleware)
+            .add(diesel_middleware)
+            .build(),
+    );
+
+    let pipeline_set = finalize_pipeline_set(pipelines);
+    let default_chain = (default, ());
+
+    build_router(default_chain, pipeline_set, |route| {
         route.get_or_head("/_health").to(health::check)
     })
 }
