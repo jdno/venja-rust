@@ -6,8 +6,11 @@
 
 #[macro_use]
 extern crate gotham_derive;
+#[macro_use]
+extern crate log;
 
 pub mod config;
 pub mod handlers;
+pub mod middleware;
 pub mod models;
 pub mod router;
