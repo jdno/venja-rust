@@ -166,19 +166,22 @@ mod tests {
 
     use diesel::pg::PgConnection;
     use diesel::r2d2::{ConnectionManager, Pool};
+    use std::env;
 
-    static DATABASE_URL: &'static str = "postgres://localhost/venja_test";
+    fn database_url() -> String {
+        env::var("DATABASE_URL").unwrap_or_else(|_| String::from("postgres://localhost/venja_test"))
+    }
 
     #[test]
     fn new_with_default_config() {
-        let manager = ConnectionManager::new(DATABASE_URL);
+        let manager = ConnectionManager::new(database_url());
         let pool = Pool::<ConnectionManager<PgConnection>>::new(manager).unwrap();
         let _middleware = DieselMiddleware::with_pool(pool);
     }
 
     #[test]
     fn new_with_custom_pool_config() {
-        let manager = ConnectionManager::new(DATABASE_URL);
+        let manager = ConnectionManager::new(database_url());
         let pool = Pool::<ConnectionManager<PgConnection>>::builder()
             .min_idle(Some(1))
             .build(manager)
