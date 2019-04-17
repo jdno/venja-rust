@@ -7,7 +7,7 @@ use crate::middleware::diesel::DieselMiddleware;
 use crate::models::PgPool;
 use gotham::middleware::state::StateMiddleware;
 use gotham::pipeline::new_pipeline;
-use gotham::pipeline::set::{finalize_pipeline_set, new_pipeline_set, PipelineSet};
+use gotham::pipeline::set::{finalize_pipeline_set, new_pipeline_set};
 use gotham::router::builder::*;
 use gotham::router::Router;
 use std::sync::Arc;

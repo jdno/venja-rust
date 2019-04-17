@@ -65,6 +65,16 @@ pub struct Config {
 }
 
 impl Config {
+    /// Return the database url.
+    ///
+    /// The database URL can be set through the environment variable
+    /// DATABASE_URL. If the variable is not set, the database URL defaults to
+    /// a local database for the current environment (development or test).
+    pub fn database_url(&self) -> String {
+        env::var("DATABASE_URL")
+            .unwrap_or_else(|_| format!("postgres://localhost/venja_{}", self.env.to_string()))
+    }
+
     /// Return the address for the server.
     ///
     /// The server address is constructed from the host and port in the

@@ -1,5 +1,4 @@
 use dotenv::dotenv;
-use std::env;
 use venja::config::Config;
 use venja::models::connection_pool;
 use venja::router;
@@ -11,8 +10,7 @@ fn main() {
     let config = Config::default();
     let address = config.server_address();
 
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    let pool = connection_pool(database_url);
+    let pool = connection_pool(config.database_url());
 
     gotham::start(address, router::router(config, pool))
 }

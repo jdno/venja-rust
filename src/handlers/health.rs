@@ -17,7 +17,6 @@ use serde::Serialize;
 enum Status {
     Pass,
     Fail,
-    Warn,
 }
 
 #[derive(Serialize)]
@@ -63,16 +62,13 @@ mod tests {
     use crate::router::router;
     use gotham::test::{TestResponse, TestServer};
     use hyper::StatusCode;
-    use std::env;
 
     fn request_check(endpoint: String) -> TestResponse {
         let config = Config {
             env: Environment::Test,
             ..Default::default()
         };
-        let database_url = env::var("DATABASE_URL")
-            .unwrap_or_else(|_| String::from("postgres://localhost/venja_test"));
-        let pool = connection_pool(String::from(database_url));
+        let pool = connection_pool(config.database_url());
 
         let address = format!("http://{}/{}", config.server_address(), endpoint);
         let test_server = TestServer::new(router(config, pool)).unwrap();
