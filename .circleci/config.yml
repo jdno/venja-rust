@@ -24,6 +24,14 @@ jobs:
           command: build/cargo-make.sh
 
       - run:
+          name: Install Diesel
+          command: cargo install diesel_cli
+
+      - run:
+          name: Migrate database
+          command: diesel migration run
+
+      - run:
           name: Run tests
           command: cargo make ci-flow
 
@@ -40,6 +48,14 @@ jobs:
 
     steps:
       - checkout
+
+      - run:
+          name: Install Diesel
+          command: cargo install diesel_cli
+
+      - run:
+          name: Migrate database
+          command: diesel migration run
 
       - run:
           name: Run tests

@@ -7,7 +7,12 @@ install_crate = "rustfmt"
 command = "cargo"
 args = ["fmt", "--all", "--", "--check"]
 
+[tasks.migrate]
+command = "diesel"
+args = ["migration", "run"]
+
 [tasks.test]
+env = { "VENJA_ENV" = "test" }
 command = "cargo"
 args = ["test"]
 

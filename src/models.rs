@@ -1,6 +1,8 @@
 //! The `models` module implements the models of the applications that are
 //! persisted in the database.
 
+pub mod user;
+
 use crate::middleware::diesel::Diesel;
 use diesel::pg::PgConnection;
 use diesel::r2d2::{ConnectionManager, Pool};
