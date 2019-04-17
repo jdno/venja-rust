@@ -1,6 +1,6 @@
 # Venja
 
-[![Build Status](https://dev.azure.com/jdno/Venja/_apis/build/status/jdno.venja?branchName=master)](https://dev.azure.com/jdno/Venja/_build/latest?definitionId=1&branchName=master)
+[![Build Status](https://img.shields.io/circleci/project/github/jdno/venja/master.svg)](https://circleci.com/gh/jdno/venja)
 [![codecov](https://codecov.io/gh/jdno/venja/branch/master/graph/badge.svg)](https://codecov.io/gh/jdno/venja)
 
 A simple, beautifully designed habit tracker.
