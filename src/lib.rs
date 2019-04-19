@@ -8,8 +8,6 @@
 extern crate diesel;
 #[macro_use]
 extern crate gotham_derive;
-#[macro_use]
-extern crate log;
 
 pub mod config;
 pub mod handlers;

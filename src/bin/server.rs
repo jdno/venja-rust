@@ -1,7 +1,7 @@
 use dotenv::dotenv;
 use venja::config::Config;
-use venja::models::connection_pool;
 use venja::router;
+use venja::router::Repository;
 
 fn main() {
     dotenv().ok();
@@ -10,7 +10,7 @@ fn main() {
     let config = Config::default();
     let address = config.server_address();
 
-    let pool = connection_pool(config.database_url());
+    let repo = Repository::new(&config.database_url().as_str());
 
-    gotham::start(address, router::router(config, pool))
+    gotham::start(address, router::router(config, repo))
 }

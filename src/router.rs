@@ -3,14 +3,18 @@
 
 use crate::config::Config;
 use crate::handlers::health;
-use crate::middleware::diesel::DieselMiddleware;
-use crate::models::PgPool;
+use crate::middleware::diesel::{DieselMiddleware, Repo};
+use diesel::pg::PgConnection;
 use gotham::middleware::state::StateMiddleware;
 use gotham::pipeline::new_pipeline;
 use gotham::pipeline::set::{finalize_pipeline_set, new_pipeline_set};
 use gotham::router::builder::*;
 use gotham::router::Router;
 use std::sync::Arc;
+
+/// The repository is an abstraction around the database connection. It runs
+/// database queries in a non-blocking thread pool managed by tokio.
+pub type Repository = Repo<PgConnection>;
 
 /// The `AppState` is shared across the worker threads. It provides convenient
 /// access to the configuration of the application, and the database connection
@@ -25,13 +29,13 @@ pub struct AppState {
 ///
 /// This function creates a new instance of a router, and maps HTTP endpoints to
 /// specific `handlers`.
-pub fn router(config: Config, pool: PgPool) -> Router {
+pub fn router(config: Config, repo: Repository) -> Router {
     let state = AppState {
         config: Arc::new(config),
     };
 
     let state_middleware = StateMiddleware::new(state);
-    let diesel_middleware = DieselMiddleware::with_pool(pool);
+    let diesel_middleware = DieselMiddleware::new(repo);
 
     let pipelines = new_pipeline_set();
 

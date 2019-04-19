@@ -3,13 +3,15 @@
 //! the services it depends on, and returns a detailed status report.
 
 use crate::config::Environment;
-use crate::models::{connection, PgConn};
-use crate::router::AppState;
+use crate::router::{AppState, Repository};
 use diesel::query_dsl::RunQueryDsl;
 use diesel::sql_query;
+use futures::future;
+use futures::future::Future;
+use gotham::handler::{HandlerFuture, IntoHandlerError};
 use gotham::helpers::http::response::create_response;
 use gotham::state::{FromState, State};
-use hyper::{Body, Response, StatusCode};
+use hyper::StatusCode;
 use serde::Serialize;
 
 /// https://tools.ietf.org/html/draft-inadarei-api-health-check-02
@@ -27,30 +29,35 @@ struct Health {
 
 /// The health endpoint has a single action that checks if the application, and
 /// the services it depends on, work correctly.
-pub fn check(state: State) -> (State, Response<Body>) {
-    let app_state = AppState::borrow_from(&state);
+pub fn check(state: State) -> Box<HandlerFuture> {
+    let app_state = AppState::borrow_from(&state).clone();
+    let repo = Repository::borrow_from(&state).clone();
 
-    let health = Health {
-        environment: app_state.config.env.clone(),
-        postgres: check_postgres(connection(&state)),
-    };
+    let future = repo
+        .run(move |connection| sql_query("SELECT 1").execute(&connection))
+        .map_err(|e| e.into_handler_error())
+        .then(move |result| {
+            let postgres_status = match result {
+                Ok(_) => Status::Pass,
+                Err(_) => Status::Fail,
+            };
 
-    let response = create_response(
-        &state,
-        StatusCode::OK,
-        mime::APPLICATION_JSON,
-        serde_json::to_string(&health).expect("Failed to serialize health"),
-    );
-    (state, response)
-}
+            let health = Health {
+                environment: app_state.config.env.clone(),
+                postgres: postgres_status,
+            };
 
-fn check_postgres(conn: PgConn) -> Status {
-    let result = sql_query("SELECT 1").execute(&conn);
+            let response = create_response(
+                &state,
+                StatusCode::OK,
+                mime::APPLICATION_JSON,
+                serde_json::to_string(&health).expect("Failed to serialize health"),
+            );
 
-    match result {
-        Ok(_) => Status::Pass,
-        Err(_) => Status::Fail,
-    }
+            future::ok((state, response))
+        });
+
+    Box::new(future)
 }
 
 #[cfg(test)]
@@ -58,8 +65,7 @@ mod tests {
     use crate::config::{Config, Environment};
     use crate::handlers::health::Health;
     use crate::handlers::health::Status::Pass;
-    use crate::models::connection_pool;
-    use crate::router::router;
+    use crate::router::{router, Repository};
     use gotham::test::{TestResponse, TestServer};
     use hyper::StatusCode;
 
@@ -68,10 +74,10 @@ mod tests {
             env: Environment::Test,
             ..Default::default()
         };
-        let pool = connection_pool(config.database_url());
+        let repo = Repository::new(&config.database_url().as_str());
 
         let address = format!("http://{}/{}", config.server_address(), endpoint);
-        let test_server = TestServer::new(router(config, pool)).unwrap();
+        let test_server = TestServer::new(router(config, repo)).unwrap();
 
         test_server.client().get(address).perform().unwrap()
     }
