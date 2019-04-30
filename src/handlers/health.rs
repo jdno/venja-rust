@@ -68,13 +68,14 @@ mod tests {
     use crate::router::{router, Repository};
     use gotham::test::{TestResponse, TestServer};
     use hyper::StatusCode;
+    use std::str;
 
     fn request_check(endpoint: String) -> TestResponse {
         let config = Config {
             env: Environment::Test,
             ..Default::default()
         };
-        let repo = Repository::new(&config.database_url().as_str());
+        let repo = Repository::with_test_transactions(&config.database_url().as_str());
 
         let address = format!("http://{}/{}", config.server_address(), endpoint);
         let test_server = TestServer::new(router(config, repo)).unwrap();
@@ -93,11 +94,14 @@ mod tests {
         let response = request_check(String::from("_health"));
 
         let body = response.read_body().unwrap();
+        let body_as_str = str::from_utf8(&body).unwrap();
+
         let expected = serde_json::to_string(&Health {
             environment: Environment::Test,
             postgres: Pass,
-        });
+        })
+        .unwrap();
 
-        assert_eq!(&body[..], expected.unwrap().as_bytes());
+        assert_eq!(body_as_str, expected);
     }
 }
