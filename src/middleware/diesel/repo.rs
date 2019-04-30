@@ -1,9 +1,10 @@
 use diesel::r2d2::ConnectionManager;
 use diesel::Connection;
+use futures::future;
 use futures::future::{poll_fn, Future};
 use gotham_derive::StateData;
-use r2d2::{Pool, PooledConnection};
-use tokio_threadpool::{blocking, BlockingError};
+use r2d2::{CustomizeConnection, Pool, PooledConnection};
+use tokio_threadpool::blocking;
 
 /// A database "repository", for running database workloads.
 /// Manages a connection pool and running blocking tasks using
@@ -31,36 +32,41 @@ impl<T> Repo<T>
 where
     T: Connection + 'static,
 {
+    /// Creates a repo with default connection pool settings.
+    /// The default connection pool is `r2d2::Builder::default()`
     pub fn new(database_url: &str) -> Self {
-        Repo {
-            connection_pool: Repo::connection_pool(database_url),
-        }
+        Self::from_pool_builder(database_url, r2d2::Builder::default())
     }
 
-    pub fn connection_pool(database_url: &str) -> Pool<ConnectionManager<T>> {
+    /// Creates a repo with a pool builder, allowing you to customize
+    /// any connection pool configuration.
+    pub fn from_pool_builder(
+        database_url: &str,
+        builder: r2d2::Builder<ConnectionManager<T>>,
+    ) -> Self {
         let manager = ConnectionManager::new(database_url);
-        Repo::configure_pool(manager)
-    }
-
-    #[cfg(test)]
-    fn configure_pool(manager: ConnectionManager<T>) -> Pool<ConnectionManager<T>> {
-        let customizer = TestConnectionCustomizer {};
-
-        Pool::builder()
-            .connection_customizer(Box::new(customizer))
+        let connection_pool = builder
             .build(manager)
-            .expect("could not initiate test db pool")
+            .expect("could not initiate test db pool");
+        Repo { connection_pool }
     }
 
-    #[cfg(not(test))]
-    fn configure_pool(manager: ConnectionManager<T>) -> Pool<ConnectionManager<T>> {
-        Pool::new(manager).expect("could not initiate db pool")
+    /// Creates a repo for use in tests, where queries are executed
+    /// with an isolated test transaction and rolled back when
+    /// the connection is dropped. This allows tests to run in parallel
+    /// without impacting each other.
+    pub fn with_test_transactions(database_url: &str) -> Self {
+        let customizer = TestConnectionCustomizer {};
+        let builder = Pool::builder().connection_customizer(Box::new(customizer));
+        Self::from_pool_builder(database_url, builder)
     }
-    /// Runs the given closure in a way that is safe for blocking IO to the database.
+
+    /// Runs the given closure in a way that is safe for blocking IO to the
+    /// database without blocking the tokio reactor.
     /// The closure will be passed a `Connection` from the pool to use.
-    pub fn run<F, R>(&self, f: F) -> impl Future<Item = R, Error = BlockingError>
+    pub fn run<F, R, E>(&self, f: F) -> impl Future<Item = R, Error = E>
     where
-        F: FnOnce(PooledConnection<ConnectionManager<T>>) -> R
+        F: FnOnce(PooledConnection<ConnectionManager<T>>) -> Result<R, E>
             + Send
             + std::marker::Unpin
             + 'static,
@@ -72,18 +78,21 @@ where
         // `f.take()` allows the borrow checker to be sure `f` is not moved into the inner closure
         // multiple times if `poll_fn` is called multple times.
         let mut f = Some(f);
-        poll_fn(move || blocking(|| (f.take().unwrap())(pool.get().unwrap())))
+        poll_fn(move || blocking(|| (f.take().unwrap())(pool.get().unwrap()))).then(
+            |future_result| match future_result {
+                Ok(query_result) => match query_result {
+                    Ok(result) => future::ok(result),
+                    Err(error) => future::err(error),
+                },
+                Err(_) => panic!("Error running async database task."),
+            },
+        )
     }
 }
 
-#[cfg(test)]
-use r2d2::CustomizeConnection;
-
-#[cfg(test)]
 #[derive(Debug)]
 pub struct TestConnectionCustomizer;
 
-#[cfg(test)]
 impl<C, E> CustomizeConnection<C, E> for TestConnectionCustomizer
 where
     C: diesel::connection::Connection,

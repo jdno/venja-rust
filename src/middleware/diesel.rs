@@ -5,12 +5,8 @@
 // this module.
 // FIXME: Remove this module once Gotham has official support for Diesel
 
-//! Makes a Diesel connection available to Middleware and Handlers that are involved in
-//! processing a Request.
-//!
-//! Utilises r2d2 pooling to ensure efficent database usage and prevent resource exhaustion.
-
 #![allow(missing_docs)]
+
 use diesel::Connection;
 use futures::future::{self, Future};
 use log::{error, trace};
