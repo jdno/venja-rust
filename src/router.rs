@@ -16,6 +16,10 @@ use std::sync::Arc;
 /// database queries in a non-blocking thread pool managed by tokio.
 pub type Repository = Repo<PgConnection>;
 
+/// The repository implements the maker trait `juniper::Context` so that it can
+/// be passed to GraphQL queries and mutations.
+impl juniper::Context for Repository {}
+
 /// The `AppState` is shared across the worker threads. It provides convenient
 /// access to the configuration of the application, and the database connection
 /// pool.

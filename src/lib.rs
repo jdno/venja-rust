@@ -8,8 +8,11 @@
 extern crate diesel;
 #[macro_use]
 extern crate gotham_derive;
+#[macro_use]
+extern crate juniper;
 
 pub mod config;
+pub mod graphql;
 pub mod handlers;
 pub mod middleware;
 pub mod models;
