@@ -2,7 +2,7 @@
 //! instance. The router maps HTTP endpoints to `handlers`.
 
 use crate::config::Config;
-use crate::handlers::health;
+use crate::handlers::{graphql, health};
 use crate::middleware::diesel::{DieselMiddleware, Repo};
 use diesel::pg::PgConnection;
 use gotham::middleware::state::StateMiddleware;
@@ -50,6 +50,7 @@ pub fn router(config: Config, repo: Repository) -> Router {
     let default_chain = (default, ());
 
     build_router(default_chain, pipeline_set, |route| {
-        route.get_or_head("/_health").to(health::check)
+        route.post("/graphql").to(graphql::execute);
+        route.get_or_head("/_health").to(health::check);
     })
 }
