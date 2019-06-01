@@ -20,10 +20,18 @@ juniper::graphql_object!(Mutation: Repository | &self | {});
 /// The GraphQL schema can be queries by users.
 pub type Schema = juniper::RootNode<'static, Query, Mutation>;
 
+/// Create a schema.
+///
+/// This method initializes the schema with the default query and mutation
+/// objects.
+pub fn create_schema() -> Schema {
+    Schema::new(Query, Mutation)
+}
+
 #[cfg(test)]
 mod tests {
     use crate::config::{Config, Environment};
-    use crate::graphql::{Mutation, Query, Schema};
+    use crate::graphql::create_schema;
     use crate::router::Repository;
     use juniper::Variables;
 
@@ -41,7 +49,7 @@ mod tests {
         let (result, _errors) = juniper::execute(
             "query { apiVersion }",
             None,
-            &Schema::new(Query, Mutation),
+            &create_schema(),
             &Variables::new(),
             &repo(),
         )

@@ -8,8 +8,10 @@
 extern crate diesel;
 #[macro_use]
 extern crate gotham_derive;
-#[macro_use]
+#[cfg_attr(test, macro_use)]
 extern crate juniper;
+#[cfg_attr(test, macro_use)]
+extern crate serde_json;
 
 pub mod config;
 pub mod graphql;

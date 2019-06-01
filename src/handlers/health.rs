@@ -35,7 +35,7 @@ pub fn check(state: State) -> Box<HandlerFuture> {
 
     let future = repo
         .run(move |connection| sql_query("SELECT 1").execute(&connection))
-        .map_err(|e| e.into_handler_error())
+        .map_err(IntoHandlerError::into_handler_error)
         .then(move |result| {
             let postgres_status = match result {
                 Ok(_) => Status::Pass,

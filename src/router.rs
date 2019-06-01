@@ -2,6 +2,7 @@
 //! instance. The router maps HTTP endpoints to `handlers`.
 
 use crate::config::Config;
+use crate::graphql::{create_schema, Schema};
 use crate::handlers::{graphql, health};
 use crate::middleware::diesel::{DieselMiddleware, Repo};
 use diesel::pg::PgConnection;
@@ -27,6 +28,8 @@ impl juniper::Context for Repository {}
 pub struct AppState {
     /// The configuration of the application
     pub config: Arc<Config>,
+    /// The GraphQL schema
+    pub schema: Arc<Schema>,
 }
 
 /// Create a router.
@@ -36,6 +39,7 @@ pub struct AppState {
 pub fn router(config: Config, repo: Repository) -> Router {
     let state = AppState {
         config: Arc::new(config),
+        schema: Arc::new(create_schema()),
     };
 
     let state_middleware = StateMiddleware::new(state);
@@ -54,7 +58,7 @@ pub fn router(config: Config, repo: Repository) -> Router {
     let default_chain = (default, ());
 
     build_router(default_chain, pipeline_set, |route| {
-        route.post("/graphql").to(graphql::execute);
+        route.post("/graphql").to(graphql::post);
         route.get_or_head("/_health").to(health::check);
     })
 }
