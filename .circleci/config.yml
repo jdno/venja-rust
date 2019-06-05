@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   test-stable:
     docker:
-      - image: rust:1.34
+      - image: rust:1.35
         environment:
           CARGO_MAKE_RUN_CODECOV: true
           DATABASE_URL: postgres://postgres@localhost/venja_test
@@ -63,7 +63,7 @@ jobs:
 
   clippy:
     docker:
-      - image: rust:1.34
+      - image: rust:1.35
 
     steps:
       - checkout
@@ -78,7 +78,7 @@ jobs:
 
   rustfmt:
     docker:
-      - image: rust:1.34
+      - image: rust:1.35
 
     steps:
       - checkout
