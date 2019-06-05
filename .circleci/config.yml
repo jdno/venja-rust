@@ -91,6 +91,52 @@ jobs:
           name: Run Rustfmt
           command: cargo fmt --all -- --check
 
+  test-react:
+    docker:
+      - image: circleci/node:12
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: yarn-v1-{{ checksum "app/yarn.lock" }}
+
+      - run:
+          name: Install dependencies
+          command: cd app && yarn install
+
+      - save_cache:
+          key: yarn-v1-{{ checksum "app/yarn.lock" }}
+          paths:
+            - ./app/node_modules
+
+      - run:
+          name: Run tests
+          command: cd app && yarn test
+
+  prettier:
+    docker:
+      - image: circleci/node:12
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: yarn-v1-{{ checksum "app/yarn.lock" }}
+
+      - run:
+          name: Install dependencies
+          command: cd app && yarn install
+
+      - save_cache:
+          key: yarn-v1-{{ checksum "app/yarn.lock" }}
+          paths:
+            - ./app/node_modules
+
+      - run:
+          name: Prettier
+          command: cd app && ./node_modules/.bin/prettier --check "src/**/*.{ts,tsx}"
+
 workflows:
   version: 2
   test:
@@ -99,3 +145,6 @@ workflows:
       - rustfmt
       - test-nightly
       - test-stable
+
+      - prettier
+      - test-react
