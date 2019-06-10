@@ -5,6 +5,7 @@ authors = ["Jan David <jandavid@6a64.com>"]
 edition = "2018"
 
 [dependencies]
+actix-web = "1.0.0"
 bcrypt = "0.4.0"
 chrono = "0.4.6"
 diesel = { version = "1.4.2", features = ["chrono", "postgres", "r2d2", "uuidv07"] }
