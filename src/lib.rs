@@ -8,7 +8,9 @@
 extern crate diesel;
 
 pub mod config;
+pub mod handlers;
 pub mod models;
+pub mod repository;
 
 /// Diesel maintains the database schema, so that the Rust compiler can check
 /// the implementation against the database schema.

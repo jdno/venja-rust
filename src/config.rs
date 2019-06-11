@@ -1,13 +1,14 @@
 //! The `config` module implements helpful structs and functions that help
 //! manage and maintain the configuration of the application.
 
+use serde::Serialize;
 use std::env;
 use std::str::FromStr;
 
 /// The application can run in one of three environments: test, development, or
 /// production. Depending on the environment, certain features or settings might
 /// be different.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub enum Environment {
     /// Automated testing
     Test,
