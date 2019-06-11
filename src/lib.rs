@@ -6,8 +6,11 @@
 
 #[macro_use]
 extern crate diesel;
+#[cfg_attr(test, macro_use)]
+extern crate juniper;
 
 pub mod config;
+pub mod graphql;
 pub mod handlers;
 pub mod models;
 pub mod repository;
