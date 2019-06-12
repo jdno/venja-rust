@@ -5,7 +5,6 @@ jobs:
     docker:
       - image: rust:1.35
         environment:
-          CARGO_MAKE_RUN_CODECOV: true
           DATABASE_URL: postgres://postgres@localhost/venja_test
           VENJA_ENV: test
       - image: postgres:11.2-alpine
@@ -14,14 +13,6 @@ jobs:
 
     steps:
       - checkout
-
-      - run:
-          name: Install sudo
-          command: apt-get update && apt-get install -y sudo
-
-      - run:
-          name: Install cargo-make
-          command: build/cargo-make.sh
 
       - run:
           name: Install Diesel
@@ -33,13 +24,12 @@ jobs:
 
       - run:
           name: Run tests
-          command: cargo make ci-flow
+          command: cargo test
 
   test-nightly:
     docker:
       - image: rustlang/rust:nightly
         environment:
-          CARGO_MAKE_RUN_CODECOV: true
           DATABASE_URL: postgres://postgres@localhost/venja_test
           VENJA_ENV: test
       - image: postgres:11.2-alpine
