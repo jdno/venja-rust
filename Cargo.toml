@@ -13,7 +13,7 @@ dotenv = "0.14.1"
 env_logger = "0.6.1"
 futures = "0.1.27"
 juniper = "0.12.0"
-log = "0.4.6"
+log = "0.4.7"
 mime = "0.3.13"
 r2d2 = "0.8.5"
 serde = { version = "1.0.93", features = ["derive"] }
