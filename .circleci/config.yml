@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   test-stable:
     docker:
-      - image: rust:1.35
+      - image: rust:1.36
         environment:
           DATABASE_URL: postgres://postgres@localhost/venja_test
           VENJA_ENV: test
@@ -53,7 +53,7 @@ jobs:
 
   clippy:
     docker:
-      - image: rust:1.35
+      - image: rust:1.36
 
     steps:
       - checkout
@@ -68,7 +68,7 @@ jobs:
 
   rustfmt:
     docker:
-      - image: rust:1.35
+      - image: rust:1.36
 
     steps:
       - checkout
