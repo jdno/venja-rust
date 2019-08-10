@@ -14,6 +14,9 @@ jobs:
     steps:
       - checkout
 
+      - restore_cache:
+          key: stable-v1-{{ checksum "Cargo.lock" }}
+
       - run:
           name: Install Diesel
           command: cargo install diesel_cli
@@ -25,6 +28,11 @@ jobs:
       - run:
           name: Run tests
           command: cargo test
+
+      - save_cache:
+          key: stable-v1-{{ checksum "Cargo.lock" }}
+          paths:
+            - ./target
 
   test-nightly:
     docker:
@@ -39,6 +47,9 @@ jobs:
     steps:
       - checkout
 
+      - restore_cache:
+          key: nightly-v1-{{ checksum "Cargo.lock" }}
+
       - run:
           name: Install Diesel
           command: cargo install diesel_cli
@@ -51,12 +62,20 @@ jobs:
           name: Run tests
           command: cargo test
 
+      - save_cache:
+          key: nightly-v1-{{ checksum "Cargo.lock" }}
+          paths:
+            - ./target
+
   clippy:
     docker:
       - image: rust:1.36
 
     steps:
       - checkout
+
+      - restore_cache:
+          key: stable-v1-{{ checksum "Cargo.lock" }}
 
       - run:
           name: Install Clippy
@@ -65,6 +84,11 @@ jobs:
       - run:
           name: Run Clippy
           command: cargo clippy --all
+
+      - save_cache:
+          key: stable-v1-{{ checksum "Cargo.lock" }}
+          paths:
+            - ./target
 
   rustfmt:
     docker:
