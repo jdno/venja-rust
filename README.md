@@ -1,7 +1,10 @@
-# Venja
+> **Attention**
+>
+> Venja is now being built using Rails in the repository [jdno/venja]. This
+> repository here has been archived, and is only kept around for documentation
+> and reference.
 
-[![Build Status](https://img.shields.io/circleci/project/github/jdno/venja/master.svg)](https://circleci.com/gh/jdno/venja)
-[![codecov](https://codecov.io/gh/jdno/venja/branch/master/graph/badge.svg)](https://codecov.io/gh/jdno/venja)
+# Venja
 
 A simple, beautifully designed habit tracker.
 
@@ -43,6 +46,7 @@ details.
 [cargo]: https://doc.rust-lang.org/cargo/
 [cargo-make]: https://github.com/sagiegurari/cargo-make
 [diesel]: http://diesel.rs
+[jdno/venja]: https://github.com/jdno/venja
 [license]: LICENSE.txt
 [rust]: https://www.rust-lang.org
 [source-available]: https://en.wikipedia.org/wiki/Source-available_software
